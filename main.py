@@ -44,8 +44,12 @@ crossoff_form = """
     <form action="/crossoff" method="post">
         <label for="old-movie">
             I want to remove
-            <input type="text" id="old-movie" name="old-movie"/>
-            from my watchlist.
+            <select id="old_movie" name="old-movie">
+                <option>Home Alone</option>
+                <option>Crazy Rich Asians</option>
+                <option>Acrimony</option>
+                <option>Slenderman</option>
+            </select>
         </label>
         <input type="submit" value="Remove It"/>
     </form>
