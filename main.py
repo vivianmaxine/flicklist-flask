@@ -39,19 +39,27 @@ add_form = """
 # a form for crossing off watched movies
 crossoff_form = """
 
+<!DOCTYPE html>
+
+    <form action="/crossoff" method="post">
+        <label for="old-movie">
+            I want to remove
+            <input type="text" id="old-movie" name="old-movie"/>
+            from my watchlist.
+        </label>
+        <input type="submit" value="Remove It"/>
+    </form>
+
 """
 
-# TODO:
-# Finish filling in the function below so that the user will see a message like:
-# "Star Wars has been crossed off your watchlist".
-# And create a route above the function definition to receive and handle the request from 
-# your crossoff_form.
-def crossoff_movie():
-    crossed_off_movie = request.form['crossed-off-movie']    
+@app.route("/")
+def index():
+    edit_header = "<h2>Edit My Watchlist</h2>"
 
-# TODO:
-# modify the crossoff_form above to use a dropdown (<select>) instead of
-# an input text field (<input type="text"/>)
+    # build the response string
+    content = page_header + edit_header + add_form + '<br>' + crossoff_form + page_footer
+
+    return content
 
 @app.route("/add", methods=['POST'])
 def add_movie():
@@ -64,15 +72,27 @@ def add_movie():
 
     return content
 
+# TODO:
+# Finish filling in the function below so that the user will see a message like:
+# "Star Wars has been crossed off your watchlist".
+# And create a route above the function definition to receive and handle the request from 
+# your crossoff_form.
 
-@app.route("/")
-def index():
-    edit_header = "<h2>Edit My Watchlist</h2>"
+@app.route("/crossoff", methods=['POST'])
+def crossoff_movie():
+    old_movie = request.form['old-movie']
 
-    # build the response string
-    content = page_header + edit_header + add_form + page_footer
+    old_movie_element = "<strong><strike>" + old_movie + "</strong></strike>"
+    sentence = old_movie_element + '&nbsp;' + "This movie has been removed from your Watchlist!"
+    content = page_header + "<p>" + sentence + "</p>" + page_footer
 
     return content
+# TODO:
+# modify the crossoff_form above to use a dropdown (<select>) instead of
+# an input text field (<input type="text"/>)
+
+
+
 
 
 app.run()
