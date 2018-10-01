@@ -22,6 +22,13 @@ page_footer = """
 
 # a form for adding new movies
 add_form = """
+    <style>
+        .error {
+            color: red;
+            font-weight: 800;
+            font-family: Tahoma, Arial;
+        }
+    </style>
     <form action="/add" method="post">
         <label>
             I want to add
@@ -86,12 +93,18 @@ def crossoff_movie():
 
 
 @app.route("/add", methods=['POST'])
+def validate_movie():
+
+    new_movie = request.form['new-movie']
+
+    new_movie_error = ''
+
+    if new_movie = '':
+        new_movie_error = 'Please enter a movie title.'
+
 def add_movie():
     new_movie = request.form['new-movie']
 
-    # TODO 
-    # 'escape' the user's input so that if they typed HTML, it doesn't mess up our site
-    
     # TODO 
     # if the user typed nothing at all, redirect and tell them the error
 
@@ -99,8 +112,8 @@ def add_movie():
     # if the user wants to add a terrible movie, redirect and tell them not to add it b/c it sucks
 
     # build response content
-    new_movie_element = "<strong>" + new_movie + "</strong>"
-    sentence = new_movie_element + " has been added to your Watchlist!"
+    new_movie_element = "<strong>" + cgi.escape(new_movie) + "</strong>"
+    sentence = cgi.escape(new_movie_element) + " has been added to your Watchlist!"
     content = page_header + "<p>" + sentence + "</p>" + page_footer
 
     return content
