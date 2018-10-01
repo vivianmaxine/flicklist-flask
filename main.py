@@ -35,6 +35,7 @@ add_form = """
             <input type="text" name="new-movie"/>
             to my watchlist.
         </label>
+        <p class="error">{new_movie_error}</p>
         <input type="submit" value="Add It"/>
     </form>
 """
@@ -72,25 +73,26 @@ terrible_movies = [
 ]
 
 
-@app.route("/crossoff", methods=['POST'])
-def crossoff_movie():
-    crossed_off_movie = request.form['crossed-off-movie']
+@app.route("/")
+def index():
+    edit_header = "<h2>Edit My Watchlist</h2>"
 
-    if crossed_off_movie not in get_current_watchlist():
-        # the user tried to cross off a movie that isn't in their list,
-        # so we redirect back to the front page and tell them what went wrong
-        error = "'{0}' is not in your Watchlist, so you can't cross it off!".format(crossed_off_movie)
+    # if we have an error, make a <p> to display it
+    error = request.args.get("error")
+    if error:
+        error_esc = cgi.escape(error, quote=True)
+        error_element = '<p class="error">' + error_esc + '</p>'
+    else:
+        error_element = ''
 
-        # redirect to homepage, and include error as a query parameter in the URL
-        return redirect("/?error=" + error)
+    # combine all the pieces to build the content of our response
+    main_content = edit_header + add_form + crossoff_form + error_element
 
-    # if we didn't redirect by now, then all is well
-    crossed_off_movie_element = "<strike>" + crossed_off_movie + "</strike>"
-    confirmation = crossed_off_movie_element + " has been crossed off your Watchlist."
-    content = page_header + "<p>" + confirmation + "</p>" + page_footer
+
+    # build the response string
+    content = page_header + main_content + page_footer
 
     return content
-
 
 @app.route("/add", methods=['POST'])
 def validate_movie():
@@ -119,24 +121,22 @@ def add_movie():
     return content
 
 
-@app.route("/")
-def index():
-    edit_header = "<h2>Edit My Watchlist</h2>"
+@app.route("/crossoff", methods=['POST'])
+def crossoff_movie():
+    crossed_off_movie = request.form['crossed-off-movie']
 
-    # if we have an error, make a <p> to display it
-    error = request.args.get("error")
-    if error:
-        error_esc = cgi.escape(error, quote=True)
-        error_element = '<p class="error">' + error_esc + '</p>'
-    else:
-        error_element = ''
+    if crossed_off_movie not in get_current_watchlist():
+        # the user tried to cross off a movie that isn't in their list,
+        # so we redirect back to the front page and tell them what went wrong
+        error = "'{0}' is not in your Watchlist, so you can't cross it off!".format(crossed_off_movie)
 
-    # combine all the pieces to build the content of our response
-    main_content = edit_header + add_form + crossoff_form + error_element
+        # redirect to homepage, and include error as a query parameter in the URL
+        return redirect("/?error=" + error)
 
-
-    # build the response string
-    content = page_header + main_content + page_footer
+    # if we didn't redirect by now, then all is well
+    crossed_off_movie_element = "<strike>" + crossed_off_movie + "</strike>"
+    confirmation = crossed_off_movie_element + " has been crossed off your Watchlist."
+    content = page_header + "<p>" + confirmation + "</p>" + page_footer
 
     return content
 
