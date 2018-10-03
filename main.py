@@ -140,7 +140,10 @@ def add_movie():
 @app.route("/new_movie_success", methods=['GET'])
 def valid_movie():
     new_movie = request.args.get('new_movie')
-    return 'You have successfully added {0} to your watchlist.'.format(new_movie)
+    new_movie_error = ''
+    sentence = "You have successfully added <b>{0}</b> to your watchlist!".format(new_movie)
+    content = page_header + sentence + "<br><br><br>" + add_form.format(new_movie_error=new_movie_error) + crossoff_form + page_footer
+    return content
 
 @app.route("/crossoff", methods=['POST'])
 def crossoff_movie():
