@@ -108,16 +108,18 @@ def validate_movie():
     new_movie = request.form['new-movie']
 
     new_movie_error = ''
+    error_message = None
 
     if new_movie == '':
-        main_content = edit_header + add_form.format(new_movie_error='Please enter a movie title.', new_movie = '') + crossoff_form + error_element
-        content = page_header + main_content + page_footer
-        return content
-    if new_movie in terrible_movies: # References terrible movies list
+        error_message = "Please enter a movie title."
+    elif new_movie in terrible_movies:
         error_message = "Trust me, you don't want to add " + new_movie + " to your watchlist..."
-        main_content = edit_header + add_form.format(new_movie_error=error_message, new_movie='') + crossoff_form + error_element
+    
+    if error_message is not None:
+        main_content = edit_header + add_form.format(new_movie_error=error_message, new_movie = '') + crossoff_form + error_element
         content = page_header + main_content + page_footer
         return content
+
     return redirect('/new_movie_success?movie={0}'.format(new_movie))
         
         
