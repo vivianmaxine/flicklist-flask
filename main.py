@@ -120,7 +120,7 @@ def validate_movie():
         content = page_header + main_content + page_footer
         return content
 
-    return redirect('/new_movie_success?movie={0}'.format(new_movie))
+    return redirect('/new_movie_success?new_movie={0}'.format(new_movie))
         
         
 def add_movie():
@@ -137,7 +137,7 @@ def add_movie():
 
     return content
 
-@app.route("/new_movie_success", methods=['POST'])
+@app.route("/new_movie_success", methods=['GET'])
 def valid_movie():
     new_movie = request.args.get('new_movie')
     return 'You have successfully added {0} to your watchlist.'.format(new_movie)
