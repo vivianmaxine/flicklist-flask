@@ -23,11 +23,11 @@ page_footer = """
 # a form for adding new movies
 add_form = """
     <style>
-        .error {
+        .error {{
             color: red;
             font-weight: 800;
             font-family: Tahoma, Arial;
-        }
+        }}
     </style>
     <form action="/add" method="post">
         <label>
@@ -35,9 +35,10 @@ add_form = """
             <input type="text" name="new-movie"/>
             to my watchlist.
         </label>
-        <p class="error">{new_movie_error}</p>
         <input type="submit" value="Add It"/>
+        <p class="error">{new_movie_error}</p>
     </form>
+    <br>
 """
 
 def get_current_watchlist():
@@ -73,7 +74,7 @@ terrible_movies = [
 ]
 
 
-@app.route("/")
+@app.route("/") # DISPLAYS THE FORMS
 def index():
     edit_header = "<h2>Edit My Watchlist</h2>"
 
@@ -86,7 +87,7 @@ def index():
         error_element = ''
 
     # combine all the pieces to build the content of our response
-    main_content = edit_header + add_form + crossoff_form + error_element
+    main_content = edit_header + add_form.format(new_movie_error='') + crossoff_form + error_element
 
 
     # build the response string
@@ -94,21 +95,28 @@ def index():
 
     return content
 
-@app.route("/add", methods=['POST'])
-def validate_movie():
+@app.route("/add", methods=['POST']) # PROCESSES ADD MOVIE FORM
 
+# TODO 
+# if the user typed nothing at all, redirect and tell them the error
+
+def validate_movie():
+    edit_header = "<h2>Edit My Watchlist</h2>"
+    error_element = ''
     new_movie = request.form['new-movie']
 
     new_movie_error = ''
 
-    if new_movie = '':
-        new_movie_error = 'Please enter a movie title.'
-
+    if new_movie != '':
+        return redirect('/new_movie_success?movie={0}'.format(new_movie))
+    else:
+        main_content = edit_header + add_form.format(new_movie_error = 'Please enter a movie title.', new_movie = '') + crossoff_form + error_element
+        content = page_header + main_content + page_footer
+        return content
+        
 def add_movie():
     new_movie = request.form['new-movie']
 
-    # TODO 
-    # if the user typed nothing at all, redirect and tell them the error
 
     # TODO 
     # if the user wants to add a terrible movie, redirect and tell them not to add it b/c it sucks
@@ -120,6 +128,10 @@ def add_movie():
 
     return content
 
+@app.route("/new_movie_success", methods=['POST'])
+def valid_movie():
+    new_movie = request.args.get('new_movie')
+    return 'You have successfully added {0} to your watchlist.'.format(new_movie)
 
 @app.route("/crossoff", methods=['POST'])
 def crossoff_movie():
