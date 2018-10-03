@@ -66,11 +66,13 @@ crossoff_form = """
 
 # a list of movies that nobody should have to watch
 terrible_movies = [
-    "Gigli",
-    "Star Wars Episode 1: Attack of the Clones",
-    "Paul Blart: Mall Cop 2",
-    "Nine Lives",
-    "Starship Troopers"
+    "Child's Play",
+    "Child's Play 2",
+    "Child's Play 3",
+    "Bride of Chucky",
+    "Seed of Chucky",
+    "Curse of Chucky",
+    "Cult of Chucky"
 ]
 
 
@@ -107,12 +109,17 @@ def validate_movie():
 
     new_movie_error = ''
 
-    if new_movie != '':
-        return redirect('/new_movie_success?movie={0}'.format(new_movie))
-    else:
-        main_content = edit_header + add_form.format(new_movie_error = 'Please enter a movie title.', new_movie = '') + crossoff_form + error_element
+    if new_movie == '':
+        main_content = edit_header + add_form.format(new_movie_error='Please enter a movie title.', new_movie = '') + crossoff_form + error_element
         content = page_header + main_content + page_footer
         return content
+    if new_movie in terrible_movies: # References terrible movies list
+        error_message = "Trust me, you don't want to add " + new_movie + " to your watchlist..."
+        main_content = edit_header + add_form.format(new_movie_error=error_message, new_movie='') + crossoff_form + error_element
+        content = page_header + main_content + page_footer
+        return content
+    return redirect('/new_movie_success?movie={0}'.format(new_movie))
+        
         
 def add_movie():
     new_movie = request.form['new-movie']
