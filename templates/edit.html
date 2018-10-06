@@ -26,6 +26,13 @@
     <input type="submit" value="Cross It Off"/>
 </form>
 
+<h2>My Watchlist</h2>
+    <ul>
+        {% for movie in watchlist %}
+        <li class="movie-bullet">{{movie}}</li>
+        {% endfor %}
+    </ul>
+
 {% if error %}
   <p class='error'>{{ error }}</p>
 {% endif %}

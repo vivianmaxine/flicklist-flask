@@ -16,7 +16,7 @@ terrible_movies = [
 
 def get_current_watchlist():
     # returns user's current watchlist--hard coded for now
-    return [ "Star Wars", "Minions", "Freaky Friday", "My Favorite Martian" ]
+    return ["Star Wars", "Minions", "Freaky Friday", "My Favorite Martian"]
 
 
 @app.route("/crossoff", methods=['POST'])
