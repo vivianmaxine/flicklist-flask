@@ -4,17 +4,20 @@ import cgi
 
 app = Flask(__name__)
 app.config['DEBUG'] = True      # displays runtime errors in the browser, too
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://flicklist:MyNewPass@localhost:8889/flicklist'
+app.config['SQLALCHEMY_DATABASE_URI'] = \
+    'mysql+pymysql://flicklist:MyNewPass@localhost:8889/flicklist'
 app.config['SQLALCHEMY_ECHO'] = True
 
 db = SQLAlchemy(app)
 
+
 class Movie(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120))
+    rating = db.Column(db.String(10))
     watched = db.Column(db.Boolean)
-    
-    # TODO: add a ratings column to the Movie table
+
+# TODO: add a ratings column to the Movie table
 
     def __init__(self, name):
         self.name = name
@@ -32,41 +35,57 @@ terrible_movies = [
     "Starship Troopers"
 ]
 
+
 def get_current_watchlist():
     return Movie.query.filter_by(watched=False).all()
+
 
 def get_watched_movies():
     # For now, we are just pretending
     # returns the list of movies the user has already watched and crossed off
-    return [ "The Matrix", "The Princess Bride", "Buffy the Vampire Slayer" ]
+    return Movie.query.filter_by(watched=True).all()
+    # return ["The Matrix", "The Princess Bride", "Buffy the Vampire Slayer"]
 
-# Create a new route called rate_movie which handles a POST request on /rating-confirmation
+# Create a new route called rate_movie which handles a POST request on /
+# rating-confirmation
+
+
 @app.route("/rating-confirmation", methods=['POST'])
 def rate_movie():
     movie_id = request.form['movie_id']
     rating = request.form['rating']
 
     movie = Movie.query.get(movie_id)
+    # looks up movie object from ID
+    # movie is an instance of the class Movie
+
     if movie not in get_watched_movies():
         # the user tried to rate a movie that isn't in their list,
         # so we redirect back to the front page and tell them what went wrong
         error = "'{0}' is not in your Watched Movies list, so you can't rate it!".format(movie)
-
-        # redirect to homepage, and include error as a query parameter in the URL
+    # redirect to homepage, and include error as a query parameter in the URL
         return redirect("/?error=" + error)
 
     # if we didn't redirect by now, then all is well
-    
     # TODO: make a persistent change to the model so that you STORE the rating in the database
     # (Note: the next TODO is in templates/ratings.html)
-    
+
+    movie.rating = rating
+    db.session.add(movie)
+    db.session.commit()
+
     return render_template('rating-confirmation.html', movie=movie, rating=rating)
+
+    # INSTEAD OF
+    # return render_template('rating-confirmation.html', movie=movie, rating=rating)
 
 
 # Creates a new route called movie_ratings which handles a GET on /ratings
 @app.route("/ratings", methods=['GET'])
 def movie_ratings():
-    return render_template('ratings.html', movies = get_watched_movies())
+    return render_template(
+        'ratings.html',
+        movies=get_watched_movies())
 
 
 @app.route("/crossoff", methods=['POST'])
@@ -99,7 +118,7 @@ def add_movie():
         error = "Trust me, you don't want to add '{0}' to your Watchlist".format(new_movie_name)
         return redirect("/?error=" + error)
 
-    movie = Movie(new_movie_name)
+    movie = Movie(new_movie_name)  # turns form input into object
     db.session.add(movie)
     db.session.commit()
     return render_template('add-confirmation.html', movie=movie)
